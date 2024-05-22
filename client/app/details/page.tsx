@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import styles from "./page.module.css"
 import { Alert, Card, Snackbar} from '@mui/material';
 import FormComponent from './_components/form';
+import JsonForm from './_components/jsonForm';
 
 export const metadata: Metadata = {
     title: "Details Page",
@@ -18,7 +19,7 @@ export default function details() {
   return (
     <main className={styles.main}>
       <Card sx={{boxShadow : 2}}>
-        <FormComponent />   
+        <JsonForm/>  
       </Card>
     
     </main>
