@@ -5,6 +5,7 @@ import Form from '@rjsf/core';
 import { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import styles from './jsonForm.module.css'
+// import { title } from 'process';
 
 
 // simulating that an fetched may have different number of inputs.
@@ -19,35 +20,112 @@ const optionsArray2 = [
 ]
 
 
+
+const anotherSchema : RJSFSchema = {
+    title: 'Person',
+    type: 'object',
+    properties: {
+      'Do you have any pets?': {
+        type: 'string',
+        enum: ['No', 'Yes: One', 'Yes: More than one'],
+        // default: 'No',
+      },
+    },
+    required: ['Do you have any pets?'],
+    dependencies: {
+      'Do you have any pets?': {
+        oneOf: [
+          {
+            properties: {
+              'Do you have any pets?': {
+                enum: ['No'],
+              },
+              'How old is your pet?': {
+                type: 'number',
+              },
+            },
+          },
+          {
+            properties: {
+              'Do you have any pets?': {
+                enum: ['Yes: One'],
+              },
+              'How old is your pet?': {
+                type: 'number',
+              },
+            },
+            required: ['How old is your pet?'],
+          },
+          {
+            properties: {
+              'Do you have any pets?': {
+                enum: ['Yes: More than one'],
+              },
+              'Do you want to get rid of any?': {
+                type: 'boolean',
+              },
+            },
+            required: ['Do you want to get rid of any?'],
+          },
+        ],
+      },
+    },
+  };
+
 const initSchema: RJSFSchema = {
   title: 'Todo',
   type: 'object',
-  required: ['title'],
   properties: {
     // title: { type: 'string', title: 'Title', default: 'A new task' },
-    options: { 
+    'options': { 
       title: 'Select an option', 
-      type : 'number',
+      type : 'string',
       oneOf: [
-        {const : 1, title : 'Option 1'}, // dummy data for structure understanding
-        {const : 2, title : 'Option 2'},
+        //{const : 1, title : 'Option 1'}, // dummy data for structure understanding
+        // {const : 2, title : 'Option 2'},
       ]
+      // enum : ['Option 1', 'Option 2'],
     },
-    
   },
-  if : {
-    options : {const : 1},
-  },
-  then : {
-    radioOptions : {
-      title : 'Choose one',
-      type : 'number',
+  required : ['options'],
+
+  dependencies : {
+    'options' : {
       oneOf : [
-        {const : 1, title : 'Radio 1'},
-        {const : 2, title : 'Radio 2'},
-        {const : 3, title : 'Radio 3'},
-      ],
-    },
+        {
+          properties : {
+            'options': {const : 1},
+
+            'radioOptions' : {
+              title : 'Choose one',
+              type : 'number',
+              oneOf : [
+                // {const : 1, title : 'Radio 1'},
+                // {const : 2, title : 'Radio 2'},
+                // {const : 3, title : 'Radio 3'},
+              ],
+            }
+          },
+          required : ['radioOptions'],
+        },
+        {
+          properties : {
+            'options' : {const : 2},
+
+            'radioOptions' : {
+              title : 'Choose one',
+              type : 'number',
+              oneOf : [
+                {const : 4, title : 'Radio 4'},
+                // {const : 5, title : 'Radio 5'},
+                // {const : 6, title : 'Radio 6'},
+              ],
+            },
+          },
+          required : ['radioOptions'],
+        },
+      ]
+    }    
   },
 };
 
@@ -72,8 +150,41 @@ function updateSchema(optionsArray, setSchema){
     obj['title'] = `Option ${i + 1}`;
     oneof.push(obj);
   }
-  console.log('Yes i ran')
+  // console.log('Yes i ran')
   newSchema.properties.options.oneOf = oneof;
+
+  
+  type objType = {const : number, title : string};
+  
+  let doneof = [];
+  for(let i = 0; i < n; i++)           // putting radio options in radioOptions (anyOf)
+  {
+    let obj = {
+        properties : {
+          'options': {const : i + 1},
+          'radioOptions' : {
+            title : 'Choose one',
+            type : 'number',
+            oneOf : [
+            ],
+          }
+        },
+        required : ['radioOptions'],
+    }
+    for(let key in optionsArray[i])       
+    {
+      let value : any = optionsArray[i][key];
+      let text : string  = key;
+      
+      obj.properties.radioOptions.oneOf.push({const : value, title : text});
+    }
+    doneof.push(obj);
+    
+  }
+
+  console.log(doneof);
+
+  newSchema.dependencies.options.oneOf = doneof;
   setSchema(newSchema); 
 }
   
@@ -82,18 +193,18 @@ function updateSchema(optionsArray, setSchema){
 export default function JsonForm() {
 
 
-  // const[schema, setSchema] = useState(initSchema);
-  const[loading, setLoading] = useState(false);
+  const[schema, setSchema] = useState(initSchema);
+  const[loading, setLoading] = useState(true);
 
   
   
-  // useEffect( ()=>{
+  useEffect( ()=>{
 
-  //   setTimeout(()=>{
-  //     setLoading(false)
-  //     updateSchema(optionsArray1, setSchema);
-  //   }, 500);
-  // }, [schema])
+    setTimeout(()=>{
+      setLoading(false)
+      updateSchema(optionsArray1, setSchema);
+    }, 500);
+  }, [schema])
 
   return (
   <>
@@ -101,8 +212,8 @@ export default function JsonForm() {
     loading ? "Loading" : 
     <Form
     className={styles.formStyle}
+    schema={schema}
     uiSchema={uiSchema}
-    schema={initSchema}
     validator={validator}
     onChange={log('changed')}
     />
