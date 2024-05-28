@@ -1,0 +1,17 @@
+{
+    "title" : "SA Block",
+    "type" : "object",
+    "properties" : {
+        "options" : {
+            "title" : "Choose One Option",
+            "type" : "string",
+            "enum" : []
+        },
+        "Do you have a pets?" :{
+            "type" : "string",
+            "enum" : []
+        }
+    },
+    "required" : ["options", "Do you have a pets?"],
+    "dependencies" : {}
+  }

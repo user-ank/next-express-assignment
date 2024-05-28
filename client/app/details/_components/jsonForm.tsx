@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Form from '@rjsf/core';
-import { RJSFSchema } from '@rjsf/utils';
+import CustomCheckbox from './customCheckbox';
+import { RJSFSchema, RegistryWidgetsType } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import styles from './jsonForm.module.css'
 // import { title } from 'process';
@@ -40,9 +41,6 @@ const anotherSchema : RJSFSchema = {
               'Do you have any pets?': {
                 enum: ['No'],
               },
-              'How old is your pet?': {
-                type: 'number',
-              },
             },
           },
           {
@@ -72,7 +70,7 @@ const anotherSchema : RJSFSchema = {
     },
   };
 
-const initSchema: RJSFSchema = {
+let initSchema: RJSFSchema = {
   title: 'Todo',
   type: 'object',
   properties: {
@@ -80,11 +78,11 @@ const initSchema: RJSFSchema = {
     'options': { 
       title: 'Select an option', 
       type : 'string',
-      oneOf: [
-        //{const : 1, title : 'Option 1'}, // dummy data for structure understanding
-        // {const : 2, title : 'Option 2'},
-      ]
-      // enum : ['Option 1', 'Option 2'],
+      // oneOf: [
+      //   {const : 1, title : 'Option 1'}, // dummy data for structure understanding
+      //   {const : 2, title : 'Option 2'},
+      // ]
+      enum : ['Option 1', 'Option 2'],
     },
   },
   required : ['options'],
@@ -94,32 +92,52 @@ const initSchema: RJSFSchema = {
       oneOf : [
         {
           properties : {
-            'options': {const : 1},
-
-            'radioOptions' : {
-              title : 'Choose one',
-              type : 'number',
-              oneOf : [
-                // {const : 1, title : 'Radio 1'},
-                // {const : 2, title : 'Radio 2'},
-                // {const : 3, title : 'Radio 3'},
-              ],
+            'options': {enum : ['Option 1']},
+            // 'options': {const : 1},
+          
+            'Check 1' : {
+              title : ' ',
+              type : 'boolean',
+            },
+            'Check 2' : {
+              title : ' ',
+              type : 'boolean'
+            },
+            'Check 3' : {
+              type : 'boolean'
             }
+            // 'checkOption' : {
+            //   // title : 'Check Me 1',
+            //   // type : 'string',
+            //   // enum : [
+            //   //   'Radio 1', 'Radio 2', 'Radio 3'
+            //   // ]
+            //   anyOf : [
+                
+            //       {type : 'boolean' , title : 'Radio 1'},
+                
+            //     // {const : 2, title : 'Radio 2'},
+            //     // {const : 3, title : 'Radio 3'},
+            //   ],
+            },
+            required : ['radioOptions'],
+            
           },
-          required : ['radioOptions'],
-        },
         {
           properties : {
-            'options' : {const : 2},
+            'options' : {enum : ['Option 2']},
 
             'radioOptions' : {
-              title : 'Choose one',
-              type : 'number',
-              oneOf : [
-                {const : 4, title : 'Radio 4'},
-                // {const : 5, title : 'Radio 5'},
-                // {const : 6, title : 'Radio 6'},
-              ],
+              title : 'Check Me 2',
+              type : 'boolean',
+              // oneOf : [
+              //   {title : 'Radio 4'},
+              //   { title : 'Radio 5'},
+              //   { title : 'Radio 6'},
+              // ],
+              // enum : [
+              //   'Radio 4', 'Radio 5', 'Radio 6'
+              // ],
             },
           },
           required : ['radioOptions'],
@@ -129,14 +147,30 @@ const initSchema: RJSFSchema = {
   },
 };
 
+
+const widgets: RegistryWidgetsType = {
+  myCheckBox: CustomCheckbox,
+};
+
 const uiSchema = {
   'options' : {
     'ui:widget' : 'select',
     'ui:placeholder': 'Select'
   },
-  'radioOptions' : {
-    'ui:widget' : 'radio'
+  
+  'Check 1' : {
+    'ui:widget' : 'myCheckBox'
+  },
+  'Check 2' : {
+    'ui:widget' : 'myCheckBox'
   }
+
+    // 'checkOption' : {
+  //   'ui:widget' : 'radio'
+  // }
+  // 'Radio 1' : {
+  //   'ui:widget' : 'checkbox'
+  // }
 }
 
 function updateSchema(optionsArray, setSchema){
@@ -193,18 +227,18 @@ function updateSchema(optionsArray, setSchema){
 export default function JsonForm() {
 
 
-  const[schema, setSchema] = useState(initSchema);
-  const[loading, setLoading] = useState(true);
+  // const[schema, setSchema] = useState(initSchema);
+  const[loading, setLoading] = useState(false);
 
   
   
-  useEffect( ()=>{
+  // useEffect( ()=>{
 
-    setTimeout(()=>{
-      setLoading(false)
-      updateSchema(optionsArray1, setSchema);
-    }, 500);
-  }, [schema])
+  //   setTimeout(()=>{
+  //     setLoading(false)
+  //     updateSchema(optionsArray1, setSchema);
+  //   }, 500);
+  // }, [schema])
 
   return (
   <>
@@ -212,8 +246,9 @@ export default function JsonForm() {
     loading ? "Loading" : 
     <Form
     className={styles.formStyle}
-    schema={schema}
+    schema={initSchema}
     uiSchema={uiSchema}
+    widgets={widgets}
     validator={validator}
     onChange={log('changed')}
     />

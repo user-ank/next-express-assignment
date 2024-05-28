@@ -4,6 +4,8 @@ import styles from "./page.module.css"
 import { Alert, Card, Snackbar} from '@mui/material';
 import FormComponent from './_components/form';
 import JsonForm from './_components/jsonForm';
+import JsonSchema from './_components/jsonSchema';
+
 
 export const metadata: Metadata = {
     title: "Details Page",
