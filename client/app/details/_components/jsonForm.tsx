@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Form from '@rjsf/core';
-import CustomCheckbox from './customCheckbox';
+import CustomCheckbox from '@/app/_components/customCheckbox';
 import { RJSFSchema, RegistryWidgetsType } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import styles from './jsonForm.module.css'
+import CustomRadioButton from '@/app/_components/customRadioButton';
 // import { title } from 'process';
 
 
@@ -93,35 +94,44 @@ let initSchema: RJSFSchema = {
         {
           properties : {
             'options': {enum : ['Option 1']},
-            // 'options': {const : 1},
-          
-            'Check 1' : {
-              title : ' ',
-              type : 'boolean',
-            },
-            'Check 2' : {
-              title : ' ',
-              type : 'boolean'
-            },
-            'Check 3' : {
-              type : 'boolean'
-            }
-            // 'checkOption' : {
-            //   // title : 'Check Me 1',
-            //   // type : 'string',
-            //   // enum : [
-            //   //   'Radio 1', 'Radio 2', 'Radio 3'
-            //   // ]
-            //   anyOf : [
-                
-            //       {type : 'boolean' , title : 'Radio 1'},
-                
-            //     // {const : 2, title : 'Radio 2'},
-            //     // {const : 3, title : 'Radio 3'},
-            //   ],
-            },
-            required : ['radioOptions'],
             
+            'checkOptions' : {
+              'title' : "Select me",
+              'type' : "string",
+              'enum' : ['Check 1', 'Check 2', 'Check 3']
+              },
+            },
+            required : ['checkOptions'],
+            dependencies : {
+              'checkOptions' : {
+                'oneOf' : [
+                  {
+                    "properties" : {
+                      "checkOptions" : {
+                        "enum" : ['Check 1'],
+                        
+                      },
+                      "checkRadioOptions" : {
+                        "type" : "string",
+                        "enum" : ['radioCheck 1', 'radioCheck 2']
+                      }
+                    }
+                  },
+                  {
+                    "properties" : {
+                      "checkOptions" : {
+                        "enum" : ['Check 2'],
+                        
+                      },
+                      "checkRadioOptions" : {
+                        "type" : "string",
+                        "enum" : ['radioCheck 3', 'radioCheck 4']
+                      }
+                    }
+                  }
+                ]
+              }
+            }
           },
         {
           properties : {
@@ -150,6 +160,7 @@ let initSchema: RJSFSchema = {
 
 const widgets: RegistryWidgetsType = {
   myCheckBox: CustomCheckbox,
+  myRadioButton: CustomRadioButton 
 };
 
 const uiSchema = {
@@ -158,12 +169,20 @@ const uiSchema = {
     'ui:placeholder': 'Select'
   },
   
-  'Check 1' : {
-    'ui:widget' : 'myCheckBox'
+  "checkOptions" : {
+    
+    "ui:widget" : "myRadioButton"
   },
-  'Check 2' : {
-    'ui:widget' : 'myCheckBox'
+  "checkRadioOptions" : {
+    "ui:widget" : "myCheckBox",
+    "ui:options": {label: false},
   }
+  // 'Check 1' : {
+  //   'ui:widget' : 'myCheckBox'
+  // },
+  // 'Check 2' : {
+  //   'ui:widget' : 'myCheckBox'
+  // }
 
     // 'checkOption' : {
   //   'ui:widget' : 'radio'
