@@ -1,10 +1,8 @@
 import React from 'react'
 import type { Metadata } from "next";
 import styles from "./page.module.css"
-import { Alert, Card, Snackbar} from '@mui/material';
-import FormComponent from './_components/form';
-import JsonForm from './_components/jsonForm';
-import JsonSchema from './_components/jsonSchema';
+import { CheckForm } from './_components/checkForm';
+import Counter from '../jotai/component/Counter';
 
 
 export const metadata: Metadata = {
@@ -20,10 +18,10 @@ export default function details() {
 
   return (
     <main className={styles.main}>
-      <Card sx={{boxShadow : 2}}>
-        <JsonForm/>  
-      </Card>
-    
+      
+        <CheckForm/>  
+      
+        <Counter/>
     </main>
   )
 }
